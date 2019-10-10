@@ -27,6 +27,11 @@ public class ProductController {
     @Autowired
     private ProductRepository productRepository;
 
+    @GetMapping("productsSortedAlphabetically")
+    public List<Product> productsSortedAlphabetically() {
+        return this.productRepository.findAllByOrderByName();
+    }
+
     @GetMapping("productsWithMargin")
     public List<ProductWithMarginDto> productWithMargin() {
         List<Product> products = this.productRepository.findAll();

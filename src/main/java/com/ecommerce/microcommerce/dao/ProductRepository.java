@@ -15,6 +15,8 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 
     List<Product> findByNameLike(String recherche);
 
+    List<Product> findAllByOrderByName();
+
     @Query("FROM Product p WHERE p.price > :priceLimit")
     List<Product> findExpensiveProduct(@Param("priceLimit") int prix);
 }
