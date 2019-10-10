@@ -1,5 +1,6 @@
 package com.ecommerce.microcommerce.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,11 +27,12 @@ public class Product {
     @Length(min = 3, max = 20, message = "Name's too long or too short")
     private String name;
 
-    @Min(value = 1)
+    @Min(value = 0)
     private int price;
     private int buyingPrice;
 
     @Transient
+    @JsonIgnore
     public Integer getMarge() {
         return this.price - this.buyingPrice;
     }

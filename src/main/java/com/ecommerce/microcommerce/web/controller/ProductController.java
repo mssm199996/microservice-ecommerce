@@ -3,7 +3,8 @@ package com.ecommerce.microcommerce.web.controller;
 import com.ecommerce.microcommerce.dao.ProductRepository;
 import com.ecommerce.microcommerce.dto.ProductWithMarginDto;
 import com.ecommerce.microcommerce.model.Product;
-import com.ecommerce.microcommerce.web.exceptions.ProduitIntrouvableException;
+import com.ecommerce.microcommerce.web.exceptions.FreeProductException;
+import com.ecommerce.microcommerce.web.exceptions.ProduitNotFoundException;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
@@ -67,23 +68,27 @@ public class ProductController {
         if (productOptional.isPresent())
             return productOptional.get();
         else
-            throw new ProduitIntrouvableException("The product " + id + " doesn't exist !");
+            throw new ProduitNotFoundException("The product " + id + " doesn't exist !");
     }
 
     @PostMapping
     public ResponseEntity<Void> addProduct(@Valid @RequestBody Product product) {
-        Product productToAdd = this.productRepository.save(product);
+        if (product.getPrice() == 0)
+            throw new FreeProductException();
+        else {
+            Product productToAdd = this.productRepository.save(product);
 
-        if (productToAdd != null) {
-            URI location = ServletUriComponentsBuilder
-                    .fromCurrentRequest()
-                    .path("/{id}")
-                    .buildAndExpand(productToAdd.getId())
-                    .toUri();
+            if (productToAdd != null) {
+                URI location = ServletUriComponentsBuilder
+                        .fromCurrentRequest()
+                        .path("/{id}")
+                        .buildAndExpand(productToAdd.getId())
+                        .toUri();
 
-            return ResponseEntity.created(location).build();
-        } else
-            return ResponseEntity.noContent().build();
+                return ResponseEntity.created(location).build();
+            } else
+                return ResponseEntity.noContent().build();
+        }
     }
 
     @DeleteMapping("{id}")
